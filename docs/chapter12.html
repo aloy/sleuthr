@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>8&nbsp; Strategies for Variable Selection – R Manual for Stat 230</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./chapter20.html" rel="next">
+<link href="./chapter11.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-626149efe8f5d16e1d391ba177679bf0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chapter12.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Strategies for Variable Selection</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">R Manual for Stat 230</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Drawing Statistical Conclusions</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Inference Using t-Distributions</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Simple Linear Regression: A Model for the Mean</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">A Closer Look at the Assumptions for Simple Linear Regression</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Multiple Regression</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Inferential Tools for Multiple Regression</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Model Checking and Refinement</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter12.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Strategies for Variable Selection</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Logistic Regression for Binary Response Variables</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Logistic Regression for Binomial Counts</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter22.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Poisson Regression for Counts</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#state-average-sat-scores" id="toc-state-average-sat-scores" class="nav-link active" data-scroll-target="#state-average-sat-scores"><span class="header-section-number">9</span> State Average SAT Scores</a>
+  <ul class="collapse">
+  <li><a href="#summary-statistics" id="toc-summary-statistics" class="nav-link" data-scroll-target="#summary-statistics"><span class="header-section-number">9.1</span> Summary statistics</a></li>
+  <li><a href="#dealing-with-many-explanatory-variables" id="toc-dealing-with-many-explanatory-variables" class="nav-link" data-scroll-target="#dealing-with-many-explanatory-variables"><span class="header-section-number">9.2</span> Dealing with Many Explanatory Variables</a></li>
+  <li><a href="#sequential-variable-selection" id="toc-sequential-variable-selection" class="nav-link" data-scroll-target="#sequential-variable-selection"><span class="header-section-number">9.3</span> Sequential Variable Selection</a></li>
+  <li><a href="#model-selection-among-all-subsets" id="toc-model-selection-among-all-subsets" class="nav-link" data-scroll-target="#model-selection-among-all-subsets"><span class="header-section-number">9.4</span> Model Selection Among All Subsets</a></li>
+  </ul></li>
+  <li><a href="#sex-discrimination-in-employment" id="toc-sex-discrimination-in-employment" class="nav-link" data-scroll-target="#sex-discrimination-in-employment"><span class="header-section-number">10</span> Sex Discrimination in Employment</a>
+  <ul class="collapse">
+  <li><a href="#summary-statistics-1" id="toc-summary-statistics-1" class="nav-link" data-scroll-target="#summary-statistics-1"><span class="header-section-number">10.1</span> Summary Statistics</a></li>
+  <li><a href="#model-selection" id="toc-model-selection" class="nav-link" data-scroll-target="#model-selection"><span class="header-section-number">10.2</span> Model Selection</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Strategies for Variable Selection</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>In this chapter we need to load the following packages (remember, you will need to install packages you have never used before if you are using your own computer).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggformula) <span class="co"># graphics</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Sleuth3)   <span class="co"># Sleuth data sets</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom)     <span class="co"># extract pieces of lm output</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gridExtra) <span class="co"># arrange multiple plots on a page</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stargazer) <span class="co"># tables to display/compare models</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(car)       <span class="co"># easy diagnostic plots</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)      <span class="co"># For stepwise selecion</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(leaps)     <span class="co"># for all subsets selection</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We will also set some options to improve legibility of graphs and output.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># display four significant digits by default and no significance stars</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">digits =</span> <span class="dv">3</span>, <span class="at">show.signif.stars =</span> <span class="cn">FALSE</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="state-average-sat-scores" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> State Average SAT Scores</h1>
+<p>What variables are associated with state SAT scores? This is the question addressed in case study 12.1 in the <em>Sleuth</em>.</p>
+<section id="summary-statistics" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="summary-statistics"><span class="header-section-number">9.1</span> Summary statistics</h2>
+<p>We begin by loading the data and summarizing the variables</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(case1201)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        State         SAT           Takers          Income        Years     
+ Alabama   : 1   Min.   : 790   Min.   : 2.00   Min.   :208   Min.   :14.4  
+ Alaska    : 1   1st Qu.: 889   1st Qu.: 6.25   1st Qu.:262   1st Qu.:15.9  
+ Arizona   : 1   Median : 966   Median :16.00   Median :295   Median :16.4  
+ Arkansas  : 1   Mean   : 948   Mean   :26.22   Mean   :294   Mean   :16.2  
+ California: 1   3rd Qu.: 998   3rd Qu.:47.75   3rd Qu.:325   3rd Qu.:16.8  
+ Colorado  : 1   Max.   :1088   Max.   :69.00   Max.   :401   Max.   :17.4  
+ (Other)   :44                                                              
+     Public         Expend          Rank     
+ Min.   :44.8   Min.   :13.8   Min.   :69.8  
+ 1st Qu.:76.9   1st Qu.:19.6   1st Qu.:74.0  
+ Median :80.8   Median :21.6   Median :80.8  
+ Mean   :81.2   Mean   :23.0   Mean   :80.0  
+ 3rd Qu.:88.2   3rd Qu.:26.4   3rd Qu.:85.8  
+ Max.   :97.0   Max.   :50.1   Max.   :90.6  
+                                             </code></pre>
+</div>
+</div>
+<p>The data are shown on page 347 (display 12.1). A total of 50 state average SAT scores are included in this data set.</p>
+</section>
+<section id="dealing-with-many-explanatory-variables" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="dealing-with-many-explanatory-variables"><span class="header-section-number">9.2</span> Dealing with Many Explanatory Variables</h2>
+<p>The following graph is presented as Display 12.4 (page 356).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pairs</span>(<span class="sc">~</span>Takers <span class="sc">+</span> Rank <span class="sc">+</span> Years <span class="sc">+</span> Income <span class="sc">+</span> Public <span class="sc">+</span> Expend <span class="sc">+</span> SAT, <span class="at">data =</span> case1201)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chapter12_files/figure-html/unnamed-chunk-4-1.png" width="768" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Using the <code>car</code> or <code>GGally</code> packages you can produce “fancier” versions of this scatterplot matrix:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Using the car package</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">scatterplotMatrix</span>(<span class="sc">~</span>Takers <span class="sc">+</span> Rank <span class="sc">+</span> Years <span class="sc">+</span> Income <span class="sc">+</span> Public <span class="sc">+</span> Expend <span class="sc">+</span> SAT, </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">diagonal=</span><span class="fu">list</span>(<span class="at">method =</span><span class="st">"histogram"</span>), <span class="at">smooth =</span> <span class="cn">FALSE</span>, <span class="at">data =</span> case1201)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chapter12_files/figure-html/unnamed-chunk-5-1.png" width="768" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Using the GGally package</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GGally)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggpairs</span>(<span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"Takers"</span>, <span class="st">"Rank"</span>, <span class="st">"Years"</span>, <span class="st">"Income"</span>, <span class="st">"Public"</span>, <span class="st">"Expend"</span>, <span class="st">"SAT"</span>), <span class="at">data =</span> case1201)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chapter12_files/figure-html/unnamed-chunk-6-1.png" width="768" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Based on the scatterplot matrix, we choose to transform the percentage of SAT takers using the (natural) logarithm. An initial model is then fit using the transformed percentage of SAT takers and median class rank (page 355-357):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>case1_mod1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(SAT <span class="sc">~</span> Rank <span class="sc">+</span> <span class="fu">log</span>(Takers), <span class="at">data =</span> case1201)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(case1_mod1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = SAT ~ Rank + log(Takers), data = case1201)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-94.46 -17.31   5.32  22.82  48.47 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)   882.08     224.13    3.94  0.00027
+Rank            2.40       2.33    1.03  0.30898
+log(Takers)   -45.19      14.06   -3.21  0.00236
+
+Residual standard error: 31.1 on 47 degrees of freedom
+Multiple R-squared:  0.815, Adjusted R-squared:  0.807 
+F-statistic:  103 on 2 and 47 DF,  p-value: &lt;2e-16</code></pre>
+</div>
+</div>
+<p>From the regression output, we observe that these two variables can explain 81.5% of the variation in SAT scores.</p>
+<p>Next we fit a linear regression model using all variables and create the partial residual plot presented as Display 12.5 (page 357).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>case1_mod2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(SAT <span class="sc">~</span> <span class="fu">log</span>(Takers) <span class="sc">+</span> Income <span class="sc">+</span> Years <span class="sc">+</span> Public <span class="sc">+</span> Expend <span class="sc">+</span> Rank, <span class="at">data =</span> case1201)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(case1_mod2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = SAT ~ log(Takers) + Income + Years + Public + Expend + 
+    Rank, data = case1201)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-61.11  -8.60   2.86  14.77  53.40 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept) 407.5399   282.7633    1.44   0.1567
+log(Takers) -38.4376    15.9521   -2.41   0.0203
+Income       -0.0359     0.1301   -0.28   0.7841
+Years        17.2181     6.3201    2.72   0.0093
+Public       -0.1130     0.5624   -0.20   0.8417
+Expend        2.5669     0.8064    3.18   0.0027
+Rank          4.1143     2.5017    1.64   0.1073
+
+Residual standard error: 24.9 on 43 degrees of freedom
+Multiple R-squared:  0.892, Adjusted R-squared:  0.877 
+F-statistic: 59.2 on 6 and 43 DF,  p-value: &lt;2e-16</code></pre>
+</div>
+</div>
+<p>According to the Cook’s distance plot, obs 29 (Alaska) seems to be an influential outlier. We may consider removing this observation from the data set.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">infIndexPlot</span>(case1_mod2, <span class="at">vars =</span> <span class="fu">c</span>(<span class="st">"Cook"</span>, <span class="st">"Studentized"</span>, <span class="st">"hat"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chapter12_files/figure-html/unnamed-chunk-9-1.png" style="height:40.0%" width="384" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><em>Sleuth</em> compares the coefficient for <code>Expend</code> with and without Alaska in the data set using the partial residual plots in Display 12.5.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>case1_mod2na <span class="ot">&lt;-</span> <span class="fu">update</span>(case1_mod2, <span class="at">subset =</span> (State <span class="sc">!=</span> <span class="st">"Alaska"</span>))</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(case1_mod2na)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 7 × 5
+  term        estimate std.error statistic   p.value
+  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+1 (Intercept)  288.      259.        1.11  0.274    
+2 log(Takers)  -30.2      14.7      -2.05  0.0462   
+3 Income         0.103     0.126     0.817 0.418    
+4 Years         13.1       5.88      2.23  0.0312   
+5 Public        -0.101     0.511    -0.198 0.844    
+6 Expend         3.94      0.849     4.64  0.0000340
+7 Rank           5.27      2.30      2.29  0.0269   </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">crPlot</span>(case1_mod2, <span class="at">variable =</span> <span class="st">"Expend"</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">crPlot</span>(case1_mod2na, <span class="at">variable =</span> <span class="st">"Expend"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chapter12_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">dev.off</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The difference between these two slopes indicates that Alaska is an influential observation. Following the analysis presented in the text, we remove Alaska from the data set.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>case1201na <span class="ot">&lt;-</span> <span class="fu">filter</span>(case1201, State <span class="sc">!=</span> <span class="st">"Alaska"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="sequential-variable-selection" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="sequential-variable-selection"><span class="header-section-number">9.3</span> Sequential Variable Selection</h2>
+<p>The book uses F-statistics as the criterion to perform the procedures of forward selection and backward elimination presented on page 359. As mentioned on page 359, the entire forward selection procedure required the fitting of only 16 of the 64 possible models presented on Display 12.6 (page 360). These 16 models utilized Expenditure and log(Takers) to predict SAT scores. Further, as mentioned on page 359, the entire backward selection procedure required the fitting of only 3 models of the 64 possible models. These 3 models used Year, Expenditure, Rank and log(Takers) to predict SAT scores.</p>
+<p>To the best of our knowledge, there is not an automated solution in R to run step-wise selection or forward selection. You can implement these manually using the <code>addterm()</code> and <code>dropterm()</code> functions found in the <code>MASS</code> package. For example, starting with the full model outlined in <em>Sleuth</em>, we can take the first two steps in backward elimination using the F-test:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dropterm</span>(case1_mod2na, <span class="at">test =</span> <span class="st">"F"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Single term deletions
+
+Model:
+SAT ~ log(Takers) + Income + Years + Public + Expend + Rank
+            Df Sum of Sq   RSS AIC F Value   Pr(F)
+&lt;none&gt;                   21397 312                
+log(Takers)  1      2150 23547 315    4.22   0.046
+Income       1       340 21737 311    0.67   0.418
+Years        1      2532 23928 315    4.97   0.031
+Public       1        20 21417 310    0.04   0.844
+Expend       1     10964 32361 330   21.52 3.4e-05
+Rank         1      2679 24076 316    5.26   0.027</code></pre>
+</div>
+</div>
+<p>Based on the above summary, <code>Public</code> is the term with the smallest F-statistic, so we should delete it.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>drop1_mod <span class="ot">&lt;-</span> <span class="fu">update</span>(case1_mod2na, . <span class="sc">~</span> . <span class="sc">-</span> Public)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(drop1_mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 5
+  term        estimate std.error statistic   p.value
+  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+1 (Intercept)  291.      256.         1.14 0.261    
+2 log(Takers)  -31.2      13.8       -2.26 0.0287   
+3 Income         0.113     0.113      1.01 0.319    
+4 Years         13.5       5.49       2.46 0.0180   
+5 Expend         3.87      0.774      5.00 0.0000100
+6 Rank           5.06      2.01       2.52 0.0155   </code></pre>
+</div>
+</div>
+<p>Now we determine what (if anything) should be eliminated next:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dropterm</span>(drop1_mod, <span class="at">test =</span> <span class="st">"F"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Single term deletions
+
+Model:
+SAT ~ log(Takers) + Income + Years + Expend + Rank
+            Df Sum of Sq   RSS AIC F Value Pr(F)
+&lt;none&gt;                   21417 310              
+log(Takers)  1      2552 23968 313    5.12 0.029
+Income       1       505 21922 309    1.01 0.319
+Years        1      3011 24428 314    6.05 0.018
+Expend       1     12465 33882 330   25.03 1e-05
+Rank         1      3162 24578 315    6.35 0.016</code></pre>
+</div>
+</div>
+<p>Based on the above summary, <code>Income</code> is the term with the smallest F-statistic, so we should delete it.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>drop2_mod <span class="ot">&lt;-</span> <span class="fu">update</span>(drop1_mod, . <span class="sc">~</span> . <span class="sc">-</span> Income)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(drop2_mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 5
+  term        estimate std.error statistic    p.value
+  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;
+1 (Intercept)   399.     232.         1.72 0.0929    
+2 log(Takers)   -38.1     11.9       -3.20 0.00257   
+3 Years          13.1      5.48       2.40 0.0207    
+4 Expend          4.00     0.764      5.23 0.00000452
+5 Rank            4.40     1.90       2.32 0.0252    </code></pre>
+</div>
+</div>
+<p>This is our stopping point, since all of the F-statistics are greater than 4:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dropterm</span>(drop2_mod, <span class="at">test =</span> <span class="st">"F"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Single term deletions
+
+Model:
+SAT ~ log(Takers) + Years + Expend + Rank
+            Df Sum of Sq   RSS AIC F Value   Pr(F)
+&lt;none&gt;                   21922 309                
+log(Takers)  1      5094 27016 317   10.22  0.0026
+Years        1      2870 24792 313    5.76  0.0207
+Expend       1     13620 35542 331   27.34 4.5e-06
+Rank         1      2676 24598 313    5.37  0.0252</code></pre>
+</div>
+</div>
+<p>When model selection is relatively guided (or the pool of variables is small) manual implementation is possible (albeit tedious). To automate the process we need to utilize either the AIC or BIC criteria for step-wise selection. Below, we demonstrate this procedure using AIC criterion.</p>
+<p>To run forward selection, you need to start with some preliminary model. This could be the intercept-only model, but it seems reasonable to include one predictor to start. Here, we choose log(Taker) as our preliminary predictor because it has the largest F-value when we fitted <code>case1201na</code> as seen above. Further, we need to give the selection procedure an upper bound for complexity, here we use <code>case1_mod2na</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Forward selection</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>prelim_mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(SAT <span class="sc">~</span> <span class="fu">log</span>(Takers), <span class="at">data =</span> case1201na)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fu">stepAIC</span>(prelim_mod, <span class="at">scope =</span> <span class="fu">list</span>(<span class="at">upper =</span> case1_mod2na, <span class="at">lower =</span> <span class="sc">~</span><span class="dv">1</span>), </span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">direction =</span> <span class="st">"forward"</span>, <span class="at">trace =</span> <span class="cn">FALSE</span>)<span class="sc">$</span>anova</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Stepwise Model Path 
+Analysis of Deviance Table
+
+Initial Model:
+SAT ~ log(Takers)
+
+Final Model:
+SAT ~ log(Takers) + Expend + Years + Rank
+
+      Step Df Deviance Resid. Df Resid. Dev AIC
+1                             47      46369 340
+2 + Expend  1    20523        46      25846 313
+3  + Years  1     1248        45      24598 313
+4   + Rank  1     2676        44      21922 309</code></pre>
+</div>
+</div>
+<p>To run backward elimination, we simply provide the richest model under consideration and specify the direction:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Backward Elimination</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">stepAIC</span>(case1_mod2na, <span class="at">direction=</span><span class="st">"backward"</span>, <span class="at">trace=</span><span class="cn">FALSE</span>)<span class="sc">$</span>anova</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Stepwise Model Path 
+Analysis of Deviance Table
+
+Initial Model:
+SAT ~ log(Takers) + Income + Years + Public + Expend + Rank
+
+Final Model:
+SAT ~ log(Takers) + Years + Expend + Rank
+
+      Step Df Deviance Resid. Df Resid. Dev AIC
+1                             42      21397 312
+2 - Public  1       20        43      21417 310
+3 - Income  1      505        44      21922 309</code></pre>
+</div>
+</div>
+<p>To run step-wise selection, we again specify the richest model under consideration and specify the direction:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stepwise Regression</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">stepAIC</span>(case1_mod2na, <span class="at">direction=</span><span class="st">"both"</span>, <span class="at">trace=</span><span class="cn">FALSE</span>)<span class="sc">$</span>anova</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Stepwise Model Path 
+Analysis of Deviance Table
+
+Initial Model:
+SAT ~ log(Takers) + Income + Years + Public + Expend + Rank
+
+Final Model:
+SAT ~ log(Takers) + Years + Expend + Rank
+
+      Step Df Deviance Resid. Df Resid. Dev AIC
+1                             42      21397 312
+2 - Public  1       20        43      21417 310
+3 - Income  1      505        44      21922 309</code></pre>
+</div>
+</div>
+<p>In this case study, the final model includes log(Takers), Expenditure, Years, and Rank. The final model can explain 91.1% percent or the variation of SAT.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>final_mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(SAT <span class="sc">~</span> <span class="fu">log</span>(Takers) <span class="sc">+</span> Years <span class="sc">+</span> Expend <span class="sc">+</span> Rank, case1201na)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(final_mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = SAT ~ log(Takers) + Years + Expend + Rank, data = case1201na)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-52.30  -9.92   0.60  11.88  59.20 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)  399.115    232.372    1.72   0.0929
+log(Takers)  -38.100     11.915   -3.20   0.0026
+Years         13.147      5.478    2.40   0.0207
+Expend         3.996      0.764    5.23  4.5e-06
+Rank           4.400      1.899    2.32   0.0252
+
+Residual standard error: 22.3 on 44 degrees of freedom
+Multiple R-squared:  0.911, Adjusted R-squared:  0.903 
+F-statistic:  112 on 4 and 44 DF,  p-value: &lt;2e-16</code></pre>
+</div>
+</div>
+<p>Note, the three procedures do not always agree, so you should think of the results as a few competing models to further explore.</p>
+<p>Additionally, remember that the full (i.e.&nbsp;richest) model should be checked for deficiencies and multicollinearity prior to being used with model selection.</p>
+</section>
+<section id="model-selection-among-all-subsets" class="level2" data-number="9.4">
+<h2 data-number="9.4" class="anchored" data-anchor-id="model-selection-among-all-subsets"><span class="header-section-number">9.4</span> Model Selection Among All Subsets</h2>
+<p>The <span class="math inline">\(C_p\)</span>-statistic can be an useful criterion to select model among all subsets. Here, we give an example about how to calculate this statistic for one model, which includes log(Takers), Expenditure, Years and Rank.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>sigma_final <span class="ot">&lt;-</span> <span class="fu">summary</span>(final_mod)<span class="sc">$</span>sigma<span class="sc">^</span><span class="dv">2</span> <span class="co"># sigma-squared of chosen model</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>sigma_full <span class="ot">&lt;-</span> <span class="fu">summary</span>(case1_mod2na)<span class="sc">$</span>sigma<span class="sc">^</span><span class="dv">2</span>   <span class="co"># sigma-squared of full model</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">49</span>  <span class="co"># sample size</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="dv">4</span> <span class="sc">+</span> <span class="dv">1</span> <span class="co"># number of coefficients in model</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>Cp <span class="ot">&lt;-</span> (n <span class="sc">-</span> p) <span class="sc">*</span> sigma_final <span class="sc">/</span> sigma_full <span class="sc">+</span> (<span class="dv">2</span> <span class="sc">*</span> p <span class="sc">-</span> n)</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>Cp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4.03</code></pre>
+</div>
+</div>
+<p>AIC and BIC are also useful criteria and each can be easily calculated for any fitted regression model. Below we calculate AIC and BIC for <code>case1_mod2na</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">AIC</span>(case1_mod2na)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 453</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">BIC</span>(case1_mod2na)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 468</code></pre>
+</div>
+</div>
+<p>While it can be useful to calculate these criteria for a fitted model, to conduct all-subsets model selection we turn to the implementation in the <code>leaps</code> package. To run model selection through an exhaustive search of all models we can use the <code>regsubsets</code> command.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>predictors <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">select</span>(case1201na, <span class="sc">-</span>State, <span class="sc">-</span>SAT)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>response <span class="ot">&lt;-</span> case1201na<span class="sc">$</span>SAT</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>allsubsets_results <span class="ot">&lt;-</span> <span class="fu">regsubsets</span>(<span class="at">x =</span> predictors, <span class="at">y =</span> response, <span class="at">method =</span> <span class="st">"exhaustive"</span>)</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>allsubsets_results</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Subset selection object
+6 Variables  (and intercept)
+       Forced in Forced out
+Takers     FALSE      FALSE
+Income     FALSE      FALSE
+Years      FALSE      FALSE
+Public     FALSE      FALSE
+Expend     FALSE      FALSE
+Rank       FALSE      FALSE
+1 subsets of each size up to 6
+Selection Algorithm: exhaustive</code></pre>
+</div>
+</div>
+<p>By default, <code>regsubsets</code> returns information about the top performing model of each size. To return the top <code>n</code> models of each size, add the argument <code>nbest = n</code> (where you specify <code>n</code>) to the call. To access the values of BIC and <span class="math inline">\(C_p\)</span>, first run <code>summary</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the summary of the selection</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>top_models <span class="ot">&lt;-</span> <span class="fu">summary</span>(allsubsets_results)</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>top_models<span class="sc">$</span>cp  <span class="co"># print Cp</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 53.25 22.67  7.19  3.75  5.00  7.00</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>top_models<span class="sc">$</span>bic <span class="co"># print BIC</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -65.4 -81.3 -92.5 -94.5 -91.5 -87.6</code></pre>
+</div>
+</div>
+<p>Alternatively, you can plot the results:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(allsubsets_results, <span class="at">scale =</span> <span class="st">"bic"</span>)</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(allsubsets_results, <span class="at">scale =</span> <span class="st">"Cp"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chapter12_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="sex-discrimination-in-employment" class="level1" data-number="10">
+<h1 data-number="10"><span class="header-section-number">10</span> Sex Discrimination in Employment</h1>
+<p>Do females receive lower starting salaries than similarly qualified and similarly experience males and did females receive smaller pay increases than males? These are the questions explored in case 12.2 in the <em>Sleuth.</em></p>
+<section id="summary-statistics-1" class="level2" data-number="10.1">
+<h2 data-number="10.1" class="anchored" data-anchor-id="summary-statistics-1"><span class="header-section-number">10.1</span> Summary Statistics</h2>
+<p>We begin by summarizing the data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(case1202)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      Bsal          Sal77           Sex         Senior          Age           Educ     
+ Min.   :3900   Min.   : 7860   Female:61   Min.   :65.0   Min.   :280   Min.   : 8.0  
+ 1st Qu.:4980   1st Qu.: 9000   Male  :32   1st Qu.:74.0   1st Qu.:349   1st Qu.:12.0  
+ Median :5400   Median :10020               Median :84.0   Median :468   Median :12.0  
+ Mean   :5420   Mean   :10393               Mean   :82.3   Mean   :474   Mean   :12.5  
+ 3rd Qu.:6000   3rd Qu.:11220               3rd Qu.:90.0   3rd Qu.:590   3rd Qu.:15.0  
+ Max.   :8100   Max.   :16320               Max.   :98.0   Max.   :774   Max.   :16.0  
+     Exper      
+ Min.   :  0.0  
+ 1st Qu.: 35.5  
+ Median : 70.0  
+ Mean   :100.9  
+ 3rd Qu.:144.0  
+ Max.   :381.0  </code></pre>
+</div>
+</div>
+<p>The data is shown on page 350-351 as display 12.3. A total of 93 employee salaries are included: 61 females and 32 males. Next, we present a full graphical display for the variables within the data set and the log of the beginning salary variable.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scatterplotMatrix</span>(<span class="sc">~</span><span class="fu">log</span>(Bsal) <span class="sc">+</span> Senior <span class="sc">+</span> Age <span class="sc">+</span> Educ <span class="sc">+</span> Exper <span class="sc">|</span> Sex, </span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">diagonal=</span><span class="fu">list</span>(<span class="at">method =</span><span class="st">"histogram"</span>), </span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">col =</span> <span class="fu">carPalette</span>(),</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">smooth =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">data =</span> case1202)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chapter12_files/figure-html/unnamed-chunk-29-1.png" width="768" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Through these scatterplots it appears that beginning salary should be on the log scale and the starting model without the effects of gender will be a saturated second-order model variables including Seniority, Age, Education, Experience, as main effects, quadratic terms, and their full interactions (See Display 12.10 on page 367). The code below runs all subset model selection on this model. Note that the typical model conventions (having the main effect for a variable if it’s quadratic or interaction term are included) are not followed, so you need to <em>think</em> about these results.</p>
+</section>
+<section id="model-selection" class="level2" data-number="10.2">
+<h2 data-number="10.2" class="anchored" data-anchor-id="model-selection"><span class="header-section-number">10.2</span> Model Selection</h2>
+<p>To determine the best subset of these variables we compare <span class="math inline">\(C_p\)</span> and BIC statistics. Display 12.11 shows the <span class="math inline">\(C_p\)</span> statistics for models that meet ‘good practice’ and have small <span class="math inline">\(C_p\)</span> values. We will demonstrate how to calculate the <span class="math inline">\(C_p\)</span> statistics for the two models with the lowest <span class="math inline">\(C_p\)</span> statistics discussed in “Identifying Good Subset Models” on pages 367-368.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>case1202_subsets <span class="ot">&lt;-</span> <span class="fu">regsubsets</span>(<span class="fu">log</span>(Bsal) <span class="sc">~</span> (Senior <span class="sc">+</span> Age <span class="sc">+</span> Educ <span class="sc">+</span> Exper)<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> <span class="fu">I</span>(Senior<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> </span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>                                 <span class="fu">I</span>(Age<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(Age<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(Exper<span class="sc">^</span><span class="dv">2</span>), </span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">nvmax=</span><span class="dv">25</span>, </span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">data=</span>case1202)</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>case1202_summary <span class="ot">&lt;-</span> <span class="fu">summary</span>(case1202_subsets)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The results can be a bit tough to digest, so it can be useful to make an index plot of the metric of interest.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">apply</span>(case1202_summary<span class="sc">$</span>which, <span class="dv">1</span>, sum) <span class="co"># number of coefs in models</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>index_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">p =</span> p <span class="sc">-</span> <span class="dv">1</span>, <span class="at">bic =</span> case1202_summary<span class="sc">$</span>bic, </span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">cp =</span> case1202_summary<span class="sc">$</span>cp)</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>bic_plot <span class="ot">&lt;-</span> <span class="fu">gf_point</span>(bic <span class="sc">~</span> p, <span class="at">data =</span> index_df)</span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>cp_plot <span class="ot">&lt;-</span> <span class="fu">gf_point</span>(cp <span class="sc">~</span> p, <span class="at">data =</span> index_df)</span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a><span class="fu">grid.arrange</span>(bic_plot, cp_plot, <span class="at">ncol =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="chapter12_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Using both BIC a model with 5 slope coefficients is flagged as “best” and using <span class="math inline">\(C_p\)</span> a model with 6 slope coefficients is flagged as “best”. We can see the terms and their estimates by using the <code>coef()</code> command:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(case1202_subsets, <span class="at">id =</span> <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(Intercept)        Educ       Exper Senior:Educ   Age:Exper  Educ:Exper 
+   8.07e+00    5.92e-02    4.53e-03   -2.78e-04   -3.65e-06   -1.42e-04 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(case1202_subsets, <span class="at">id =</span> <span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(Intercept)        Educ       Exper    I(Age^2) Senior:Educ    Age:Educ   Age:Exper 
+   7.90e+00    8.95e-02    3.82e-03    1.27e-06   -2.48e-04   -9.54e-05   -5.32e-06 </code></pre>
+</div>
+</div>
+<p>Looking at the coefficients we see that these models do not follow model-fitting convention. For example, <code>Senior:Educ</code> is in the model without <code>Senior</code>. If you wish to use a method that follows this convention, then using a sequential model selection approach can be considered.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>ssom <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(Bsal) <span class="sc">~</span> (Senior <span class="sc">+</span> Age <span class="sc">+</span> Educ <span class="sc">+</span> Exper)<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> <span class="fu">I</span>(Senior<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(Age<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> </span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>             <span class="fu">I</span>(Exper<span class="sc">^</span><span class="dv">2</span>), <span class="at">data =</span> case1202)</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>case1202_step <span class="ot">&lt;-</span> <span class="fu">stepAIC</span>(ssom, <span class="at">direction =</span> <span class="st">"backward"</span>, <span class="at">k =</span> <span class="fu">log</span>(<span class="fu">nrow</span>(case1202)), <span class="at">trace =</span> <span class="dv">0</span>)</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(case1202_step)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = log(Bsal) ~ Senior + Age + Educ + Exper + Age:Educ + 
+    Age:Exper, data = case1202)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-0.2817 -0.0476  0.0132  0.0605  0.2341 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)  7.89e+00   2.45e-01   32.21  &lt; 2e-16
+Senior      -3.15e-03   1.04e-03   -3.04  0.00313
+Age          1.24e-03   4.02e-04    3.09  0.00270
+Educ         7.20e-02   1.67e-02    4.31  4.3e-05
+Exper        2.86e-03   6.67e-04    4.28  4.8e-05
+Age:Educ    -1.02e-04   3.15e-05   -3.25  0.00166
+Age:Exper   -3.72e-06   1.02e-06   -3.65  0.00044
+
+Residual standard error: 0.0974 on 86 degrees of freedom
+Multiple R-squared:  0.469, Adjusted R-squared:  0.431 
+F-statistic: 12.6 on 6 and 86 DF,  p-value: 3.58e-10</code></pre>
+</div>
+</div>
+<p>The final model selected by backwards elimination matches the one proposed by <em>Sleuth</em>. To finish their analysis, the authors add <code>Sex</code> into the model:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>discrim_mod <span class="ot">&lt;-</span> <span class="fu">update</span>(case1202_step, . <span class="sc">~</span> . <span class="sc">+</span> Sex)</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(discrim_mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = log(Bsal) ~ Senior + Age + Educ + Exper + Sex + 
+    Age:Educ + Age:Exper, data = case1202)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.17822 -0.05197 -0.00203  0.05301  0.20466 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)  8.16e+00   2.21e-01   36.99  &lt; 2e-16
+Senior      -3.48e-03   9.09e-04   -3.83  0.00024
+Age          9.15e-04   3.57e-04    2.56  0.01218
+Educ         4.23e-02   1.57e-02    2.70  0.00836
+Exper        2.18e-03   5.98e-04    3.65  0.00045
+SexMale      1.20e-01   2.29e-02    5.22  1.3e-06
+Age:Educ    -5.46e-05   2.91e-05   -1.88  0.06402
+Age:Exper   -3.23e-06   8.96e-07   -3.61  0.00052
+
+Residual standard error: 0.0853 on 85 degrees of freedom
+Multiple R-squared:  0.598, Adjusted R-squared:  0.564 
+F-statistic:   18 on 7 and 85 DF,  p-value: 1.79e-14</code></pre>
+</div>
+</div>
+<p>Note: If you use <code>regsubsets()</code> for selection, you have to refit the selected model using <code>lm()</code> as usual in order to make predictions, etc.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./chapter11.html" class="pagination-link" aria-label="Model Checking and Refinement">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Model Checking and Refinement</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./chapter20.html" class="pagination-link" aria-label="Logistic Regression for Binary Response Variables">
+        <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Logistic Regression for Binary Response Variables</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

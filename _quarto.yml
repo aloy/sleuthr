@@ -1,0 +1,32 @@
+project:
+  type: book
+  output-dir: docs
+
+book:
+  title: "R Manual for Stat 230"
+  author: "Adam Loy"
+  date: "Fall 2025"
+  chapters:
+    - index.qmd
+    - chapter01.qmd
+    - chapter02.qmd
+    - chapter07.qmd
+    - chapter08.qmd
+    - chapter09.qmd
+    - chapter10.qmd
+    - chapter11.qmd
+    - chapter12.qmd
+    - chapter20.qmd
+    - chapter21.qmd
+    - chapter22.qmd
+
+# bibliography: references.bib
+
+format:
+  html:
+    theme: cosmo
+  pdf:
+    documentclass: scrreprt
+
+
+

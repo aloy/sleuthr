@@ -1,0 +1,45 @@
+# Overview {.unnumbered}
+
+This is an R Manual for Adam Loy's section of Applied Regression Analysis (Stat 230) taught in Fall 2025.
+
+This document is intended to help describe how to undertake analyses introduced as examples in the Third Edition of the *Statistical Sleuth* (2013) by Fred Ramsey and Dan Schafer. More information about the book can be found at http://www.proaxis.com/~panorama/home.htm.  
+
+This work adapts work done by Linda Loi, Ruobing Zhang, Kate Aloisio, and Nicholas J. Horton. Their work leveraged initiatives undertaken by Project MOSAIC (http://www.mosaic-web.org), an NSF-funded effort to improve the teaching of statistics, calculus, science and computing in the undergraduate curriculum. 
+
+
+## Textbook
+
+*The Statistical Sleuth*, third edition by Ramsey and Schaffer
+
+
+## Data sets
+
+The data sets provided by the textbook authors an be accessed through the {Sleuth3} R package. Once you have installed the package (which is already on our server), you can access the data sets using the `data()` command:
+
+```{r}
+# Example loading the data set for Case study 1 in Chapter 1
+data("case0101", package = "Sleuth3")
+```
+
+
+
+## R packages
+
+My goal is to teach you a realistic set of R packages for statistical modeling that are powerful, yet have low overhead. To this end, we will use numerous add-on packages throughout the term. 
+
+:::callout-warning
+The list below will be updated throughout the term.
+:::
+
+```{r message=FALSE, warning=FALSE}
+# Runnning list of R packages
+library(ggformula) # data viz
+library(mosaic)    # summary stats, etc.
+library(dplyr)     # data wrangling
+library(car)       # convenient functions for regression modeling
+library(broom)     # formatting/extracting regression output
+```
+
+
+
+All of these pacakges have already been installed on maize.
